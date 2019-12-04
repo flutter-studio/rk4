@@ -16,50 +16,58 @@ class RK4Result {
   final double y;
 }
 
+// 记录RK4运行的状态值
+class RK4State {
+  RK4State({
+    this.x,
+    this.y,
+    this.z,
+  });
+  double x;
+  double y;
+  double z;
+}
+
 /// RK4方法类,具体的K1,K2,K3,K4,L1,L2,L3,L4
 /// 含义请自己上浏览器查看龙格库塔方法
 class RK4 {
   // 默认解析一阶微分方程
   RK4({
-    @required double xInit,
-    @required double yInit,
+    double xInit,
+    double yInit,
     double h,
-    @required K1 k1,
-    @required double criticalValue,
-  })  : _x0 = xInit,
-        _y0 = yInit,
-        _h = h ?? 0.1,
+    K1 k1,
+    double criticalValue,
+  })  : _h = h ?? 0.1,
         _k1 = k1,
-        _cv = criticalValue,
-        _z0 = 0;
+        _cv = criticalValue ?? 1,
+        _state = RK4State(x: xInit, y: yInit),
+        _initState = RK4State(x: xInit, y: yInit);
 
   //解析二阶微分方程
   RK4.second({
-    @required double xInit,
-    @required double yInit,
-    @required double yDInit,
+    double xInit,
+    double yInit,
+    double yDInit,
     double h,
-    @required L1 l1,
-    @required double criticalValue,
-  })  : _x0 = xInit,
-        _y0 = yInit,
-        _z0 = yDInit,
-        _h = h ?? 0.1,
+    L1 l1,
+    double criticalValue,
+  })  : _h = h ?? 0.1,
         _cv = criticalValue,
         _l1 = l1,
-        _second = true;
-  // x初始值
-  final double _x0;
-  // y初始值
-  final double _y0;
-  // y的导数的初始值
-  final double _z0;
+        _second = true,
+        _state = RK4State(x: xInit, y: yInit, z: yDInit),
+        _initState = RK4State(x: xInit, y: yInit, z: yDInit);
   // 步长
   final double _h;
   // 临界值
   final _cv;
   // 是否是二阶
   bool _second = false;
+  // 记录RK4状态值
+  RK4State _state;
+  // 记录RK4初始状态值
+  final RK4State _initState;
   K1 _k1;
   double _k2(x, y) => _k1(x + _h / 2, y + _h / 2 * _k1(x, y));
   double _k3(x, y) => _k1(x + _h / 2, y + _h / 2 * _k2(x, y));
@@ -97,20 +105,34 @@ class RK4 {
                   2 * _k3_2(x, y, z) +
                   _k4_2(x, y, z));
 
+  RK4Result next({bool reset = false}) {
+    if(reset)
+      _state = _initState;
+    if (_second) {
+      double __y = _y_2(_state.x, _state.y, _state.z);
+      _state.z = _z(_state.x, _state.y, _state.z);
+      _state.y = __y;
+    } else {
+      _state.y = _y(_state.x, _state.y);
+    }
+    _state.x += _h;
+    return RK4Result(
+      x: _state.x,
+      y: _state.y,
+    );
+  }
+
   Iterable<RK4Result> run() sync* {
-    double x = _x0;
-    double y = _y0;
-    double z = _z0;
-    while (x < _cv) {
-      yield RK4Result(x: x, y: y);
+    while (_state.x < _cv) {
+      yield RK4Result(x: _state.x, y: _state.y);
       if (_second) {
-        double __y = _y_2(x, y, z);
-        z = _z(x, y, z);
-        y = __y;
+        double __y = _y_2(_state.x, _state.y, _state.z);
+        _state.z = _z(_state.x, _state.y, _state.z);
+        _state.y = __y;
       } else {
-        y = _y(x, y);
+        _state.y = _y(_state.x, _state.y);
       }
-      x += _h;
+      _state.x += _h;
     }
   }
 }
