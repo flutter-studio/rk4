@@ -2,7 +2,7 @@ name: rk4
 description: The fourth order runge kutta method is used to solve the first and second order differential equations
 version: 0.2.0
 author: flutter-studio<2534290808@qq.com>
-homepage: https://github.com/flutter-studio/ticket_card.git
+homepage: https://github.com/flutter-studio/rk4.git
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
