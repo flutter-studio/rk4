@@ -33,10 +33,13 @@ class RK4State {
 class RK4 {
   // 默认解析一阶微分方程
   RK4({
+    // x 初始值
     double xInit,
+    // y 初始值
     double yInit,
     double h,
     K1 k1,
+    // x临界值
     double criticalValue,
   })  : _h = h ?? 0.1,
         _k1 = k1,
@@ -46,11 +49,15 @@ class RK4 {
 
   //解析二阶微分方程
   RK4.second({
+    // x初始值
     double xInit,
+    // y初始值
     double yInit,
+    // y的导数的初始值
     double yDInit,
     double h,
     L1 l1,
+    // x临界值
     double criticalValue,
   })  : _h = h ?? 0.1,
         _cv = criticalValue,
