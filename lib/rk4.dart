@@ -34,11 +34,11 @@ class RK4 {
   // 默认解析一阶微分方程
   RK4({
     // x 初始值
-    double xInit,
+    @required double xInit,
     // y 初始值
-    double yInit,
+    @required double yInit,
     double h,
-    K1 k1,
+    @required K1 k1,
     // x临界值
     double criticalValue,
   })  : _h = h ?? 0.1,
@@ -50,13 +50,13 @@ class RK4 {
   //解析二阶微分方程
   RK4.second({
     // x初始值
-    double xInit,
+    @required double xInit,
     // y初始值
-    double yInit,
+    @required double yInit,
     // y的导数的初始值
-    double yDInit,
+    @required double yDInit,
     double h,
-    L1 l1,
+    @required L1 l1,
     // x临界值
     double criticalValue,
   })  : _h = h ?? 0.1,
