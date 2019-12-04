@@ -112,6 +112,8 @@ class RK4 {
                   2 * _k3_2(x, y, z) +
                   _k4_2(x, y, z));
 
+  RK4State get state => _state;
+
   RK4Result next({bool reset = false}) {
     if(reset)
       _state = _initState;
